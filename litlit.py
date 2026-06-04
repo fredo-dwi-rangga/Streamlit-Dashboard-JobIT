@@ -215,23 +215,28 @@ with st.sidebar:
 # LOAD DATA
 # ─────────────────────────────────────────────────────────────
 # Use default local file if present (no interactive path input in sidebar)
-default_path = r"C:\Users\ADVAN\Downloads\dicodingcamp\capstoneproject\final_merged_data.csv"
-if os.path.exists(default_path):
-    df_raw = load_data(default_path)
+# ─────────────────────────────────────────────────────────────
+# LOAD DATA
+# ─────────────────────────────────────────────────────────────
+# Path relatif — file CSV harus ada di root repo GitHub sejajar litlit.py
+RELATIVE_PATH = "final_merged_data.csv"
+ 
+# Cari file: coba path relatif dulu, fallback ke path lokal Windows
+LOCAL_PATH = r"C:\Users\ADVAN\Downloads\dicodingcamp\capstoneproject\final_merged_data.csv"
+ 
+if os.path.exists(RELATIVE_PATH):
+    df_raw = load_data(RELATIVE_PATH)
+    data_source = "📁 FinalFile_EDA.csv"
+elif os.path.exists(LOCAL_PATH):
+    df_raw = load_data(LOCAL_PATH)
     data_source = "📁 Local Path"
 else:
-    df_raw = None
-    # Apply feature engineering to demo data too
-    # seniority extraction removed for demo fallback
-    freq = df_raw['company'].value_counts()
-    df_raw['company_hiring_freq'] = df_raw['company'].map(freq)
-    df_raw['company_size_proxy'] = pd.cut(
-        df_raw['company_hiring_freq'],
-        bins=[0, 2, 5, 10, 9999],
-        labels=['Small (1–2)', 'Medium (3–5)', 'Large (6–10)', 'Enterprise (10+)']
+    st.error(
+        "❌ File data tidak ditemukan!\n\n"
+        f"Pastikan file **`{RELATIVE_PATH}`** sudah diupload ke repo GitHub "
+        "di folder yang sama dengan `litlit.py`."
     )
-    df_raw['salary_avg_jt'] = df_raw['salary_avg'] / 1_000_000
-
+    st.stop()
 # ─────────────────────────────────────────────────────────────
 # SIDEBAR FILTERS
 # ─────────────────────────────────────────────────────────────
